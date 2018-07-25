@@ -1,0 +1,60 @@
+#include <cstdio>
+#include <algorithm>
+
+using namespace std;
+
+const int MAXV = 1000;//最大顶点数
+const int INF = 100000000;
+
+int n,m,s,G[MAXV][MAXV];//有向图
+int d[MAXV];//起点到达各点的最短路径长度
+bool visited[MAXV] = {false};
+
+void Dijkstra(int s){
+    //初始化
+    fill(d , d+MAXV , INF);
+    d[s] = 0;
+    for(int i = 0 ; i < n ; i++){//循环n次，占领n个城市
+
+        int u = -1,min = INF;
+        for(int j = 0 ; j < n ;j++){//找到一个要占领的城市
+            if(visited[j] == false && d[j] < min){
+                u = j;
+                min = d[j];
+            }
+        }
+
+        if(u == -1) return;//未找到
+        //标记为光明
+        visited[u] = true;
+
+        //对其他的黑暗城市进行更新
+        for(int v = 0 ; v < n ; v++){
+
+            if(visited[v] == false && G[u][v] != INF && d[u] + G[u][v] <d[v]){
+
+                d[v] = d[u] + G[u][v];
+            }
+        }
+    }
+
+}
+int main() {
+
+    //输入
+    int u,v,w;
+    scanf("%d%d%d",&n,&m,&s);//顶点个数 边数 起点编号
+    fill(G[0] , G[0] + MAXV*MAXV , INF);
+    for(int i = 0 ; i < m ; i++){
+
+        scanf("%d%d%d",&u,&v,&w);
+        G[u][v] = w;
+    }
+    //算法
+    Dijkstra(s);
+    //输出
+    for(int i = 0 ; i < n ; i++)
+        printf("%d",d[i]);
+
+    return 0;
+}
