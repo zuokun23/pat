@@ -1,0 +1,56 @@
+#include <cstdio>
+#include <algorithm>
+
+using  namespace std;
+
+const int MAXV = 110;
+const int MAXE = 10010;
+int n , m;
+int father[MAXE];
+struct edge{
+    int u , v;
+    int cost;
+}E[MAXE];
+
+bool cmp(edge a, edge b){
+    return a.cost < b.cost;
+}
+
+int findFather(int x){
+    while(x != father[x])
+        x= father[x];
+    return x;
+}
+
+int kruskal(){
+
+    int ans = 0 , num_Edge = 0;
+    sort(E , E + m , cmp);
+    for(int i = 0 ; i < n ; i++)
+        father[i] = i;
+    for(int i = 0 ; i < m ; i++){
+
+        int faU = findFather(E[i].u);
+        int faV = findFather(E[i].v);
+        if(faU != faV){
+            father[faU] = faV;
+            ans += E[i].cost;
+            num_Edge++;
+            if(num_Edge == n-1) break;
+        }
+    }
+    if(num_Edge != n-1) return -1;//无法联通
+    else return ans;
+}
+int main(){
+
+    scanf("%d%d",&n,&m);
+    for(int i = 0 ; i < m ; i++)
+        scanf("%d%d%d",&E[i].u , &E[i].v , &E[i].cost);
+
+    int ans = kruskal();
+
+    printf("%d\n",ans);
+    return 0 ;
+}
+
