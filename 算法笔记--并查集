@@ -1,0 +1,47 @@
+//书p332
+#include <cstdio>
+
+using namespace std;
+
+const int N = 110;
+int father[N];
+int isRoot[N];
+int n , m;
+
+int findFather(int x){
+
+    while(x != father[x]){
+        x = father[x];
+    }
+    return x;
+}
+
+void Union(int a , int b){
+    int faA = findFather(a);
+    int faB = findFather(b);
+
+    if(faA != faB)
+        father[faA] = faB;
+}
+int main() {
+
+    scanf("%d%d", &n, &m);
+    for (int i = 1; i <= n; i++) {
+        father[i] = i;
+        isRoot[i] = 0;
+    }
+    int a, b;
+    for (int i = 0; i < m; i++) {
+        scanf("%d%d", &a, &b);
+        Union(a, b);
+    }
+
+    for (int i = 1; i <= n; i++) {
+        isRoot[findFather(i)] += 1;
+    }
+    for (int i = 1; i <= n; i++)
+        if(isRoot[i] != 0)
+            printf("%d ",isRoot[i]);
+
+    return 0;
+}
