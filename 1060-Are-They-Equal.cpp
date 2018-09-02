@@ -1,3 +1,4 @@
+//科学计数法:找.和第一个非零数的位置
 #include<iostream>
 #include<string>
 using namespace std;
