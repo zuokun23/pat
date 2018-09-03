@@ -1,88 +1,144 @@
+#include <iostream>
+#include <vector>
+#include <algorithm>
+using namespace std;
+struct node {
+    int rank, id, total = 0;
+    vector<int> score;
+    int passnum = 0;
+    bool isshown = false;
+};
+bool cmp1(node a, node b) {
+    if(a.total != b.total)
+        return a.total > b.total;
+    else if(a.passnum != b.passnum)
+        return a.passnum > b.passnum;
+    else
+        return a.id < b.id;
+}
+
+int main() {
+    int n, k, m, id, num, score;
+    scanf("%d %d %d", &n, &k, &m);
+    vector<node> v(n + 1);
+    for(int i = 1; i <= n; i++)
+        v[i].score.resize(k + 1, -1);
+    vector<int> full(k + 1);
+    for(int i = 1; i <= k; i++)
+        scanf("%d", &full[i]);
+    for(int i = 0; i < m; i++) {
+        scanf("%d %d %d", &id, &num, &score);
+        v[id].id = id;
+        v[id].score[num] = max(v[id].score[num], score);
+        if(score != -1)
+            v[id].isshown = true;
+        else if(v[id].score[num] == -1)
+            v[id].score[num] = -2;
+    }
+    for(int i = 1; i <= n; i++) {
+        for(int j = 1; j <= k; j++) {
+            if(v[i].score[j] != -1 && v[i].score[j] != -2)
+                v[i].total += v[i].score[j];
+            if(v[i].score[j] == full[j])
+                v[i].passnum++;
+        }
+    }
+    sort(v.begin() + 1, v.end(), cmp1);
+    for(int i = 1; i <= n; i++) {
+        v[i].rank = i;
+        if(i != 1 && v[i].total == v[i - 1].total)
+            v[i].rank = v[i - 1].rank;
+    }
+    for(int i = 1; i <= n; i++) {
+        if(v[i].isshown == true) {
+            printf("%d %05d %d", v[i].rank, v[i].id, v[i].total);
+            for(int j = 1; j <= k; j++) {
+                if(v[i].score[j] != -1 && v[i].score[j] != -2)
+                    printf(" %d", v[i].score[j]);
+                else if(v[i].score[j] == -1)
+                    printf(" -");
+                else
+                    printf(" 0");
+            }
+            printf("\n");
+        }
+    }
+    return 0;
+}
+
+
 //在牛客网上运行有部分测试用例没通过，在pat上全部跑过？
 #include<cstdio>
 #include<algorithm>
-#include<cstring>
-#include<string>
-
 using namespace std;
 
-const int MAXS = 100000000;
+const int maxn = 10010;
+struct User{
+	int id , sum ,score[6],numFull ;
+	//总分数sum , 每个问题的分数score,满分数量numFull
+	bool flag;
+}user[maxn];
+int fullMark[6];
 int n , k , m;
 
-struct User{
-	int id;
-	int pr[6];//每个问题得分-2为未做，-1表示编译未通过
-	int sum , numOfPer;
-	bool flag;//是否要打印=是否有通过编译的提交
-}user[10010];
-
-void init(){
-	for(int i = 1 ;i <=n ; i++){//struct内pr初始化
-		for(int j = 1 ; j <= k ;j++)
-			user[i].pr[j] = -2;//表示未做
-		user[i].sum = 0;
-		user[i].numOfPer = 0;
-		user[i].flag = false;
-		user[i].id = i;
-	}
-}
 bool cmp(User a , User b){
-
-	if(a.sum != b.sum) return a.sum > b.sum;
-	else if(a.numOfPer != b.numOfPer) return a.numOfPer > b.numOfPer;
-	else return a.id < b.id;
+	if(a.sum != b.sum)	return a.sum > b.sum;
+	else if(a.numFull != b.numFull)	return a.numFull > b.numFull;
+	return a.id < b.id;
 }
 int main(){
-    
 	
-	int p[6];
 	scanf("%d%d%d",&n,&k,&m);
-	init();
+	//初始化
+	for(int i = 1 ; i <= n ; i++){
+		fill(user[i].score+1 , user[i].score+k+1 , -2);//初始化为未提交-2,编译未通过是-1
+		user[i].id = i;
+		user[i].sum = 0;
+		user[i].numFull = 0;
+		user[i].flag = false;//是否打印
+	}
 	for(int i = 1 ; i <= k ; i++)
-		scanf("%d",p+i);
-	for(int i = 0 ; i < m ; i++){
-		
-		int u_id;
-		int p_id,score;
-		scanf("%d%d%d",&u_id,&p_id,&score);
-		if(user[u_id].pr[p_id] <= score)
-			user[u_id].pr[p_id] = score;
-		if(score >= 0)
-			user[u_id].flag = true;
-	}
-	for(int i = 1 ;i <=n ; i++){
-		for(int j = 1 ; j <= k ;j++){
-			if(user[i].pr[j] == -2 || user[i].pr[j] == -1)
-				user[i].sum += 0;
-			else if(user[i].pr[j] == p[j]){
-				user[i].sum += user[i].pr[j];
-				user[i].numOfPer +=1;
-			}else
-				user[i].sum += user[i].pr[j];
-		}
+		scanf("%d",&fullMark[i]);
+	for(int i = 1 ; i <= m ; i++){
+		int t1 , t2 ,mark;
+		scanf("%d%d",&t1,&t2);
+		scanf("%d",&mark);
+		if(mark >= 0){
+			if(mark == fullMark[t2] && user[t1].score[t2] != mark)//防止同用户通体提交多次满分
+				user[t1].numFull++;
+			if(user[t1].score[t2] < mark){
+				user[t1].sum += user[t1].score[t2] >= 0 ? (0 - user[t1].score[t2] + mark):mark;				
+				user[t1].score[t2] = mark;			
+			}
+			user[t1].flag = true;//要打印
+		}else if(mark == -1 && user[t1].score[t2] == -2)
+			user[t1].score[t2] = mark;
 	}
 
-	sort(user+1 , user+n+1 ,cmp);
-
-	int rank = 0 , tmpSum = MAXS;
-	for(int i = 1 ; i <= n ;i++){
+	//排序
+	sort(user+1 , user+n+1 , cmp);
+	
+	//打印：注意sum==0的中编译没通过一个或未提交的不打印
+	int preSum = -1 , rank = 1;
+	for(int i = 1 ; i <= n ; i++){
 		if(user[i].flag == false)
-			break;//后面的学生也全部为false
-		if(user[i].sum < tmpSum){
+			break;
+		if(user[i].sum != preSum){
+			printf("%d ",i);
 			rank = i;
-			tmpSum = user[i].sum;
-		}
-		printf("%d %05d %d",rank,user[i].id,user[i].sum);
-		for(int j = 1 ; j <= k ; j++){
-			if(user[i].pr[j] == -1)
+		}else
+			printf("%d ",rank);//rank
+		preSum = user[i].sum;
+		printf("%05d %d",user[i].id,user[i].sum);//id
+		for(int j = 1 ; j <= k ; j++){//score
+			if(user[i].score[j] >= 0)//编译失败也要打印
+				printf(" %d",user[i].score[j]);
+			else if(user[i].score[j] == -1)
 				printf(" 0");
-			else if(user[i].pr[j] == -2)
+			else	
 				printf(" -");
-			else
-				printf(" %d",user[i].pr[j]);
-			if(j == k)
-				printf("\n");
 		}
+		printf("\n");
 	}
 	return 0;
 }
