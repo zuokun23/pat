@@ -1,3 +1,4 @@
+//pat上面ac了，牛客网上面没有ac
 #include<iostream>
 #include<string>
 #include<algorithm>
