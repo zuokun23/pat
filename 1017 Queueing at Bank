@@ -1,0 +1,63 @@
+#include<cstdio>
+#include<algorithm>
+#include<vector>
+using namespace std;
+
+const int k = 111;
+const int INF = 1000000000;
+struct Customer{
+	int comeTime,serveTime;//客户到达的时间以及服务时长
+} newCustomer;//存放临时新客户信息
+vector<Customer> customer;//模拟队列
+int endTime[k];//i号窗口当前客服结束时间
+
+int convertTime(int h , int m , int s){
+	return h*3600 + m*60 + s;//转换时间以s为单位
+}
+bool cmp(Customer a , Customer b){
+	return a.comeTime < b.comeTime;//先来先服务
+}
+
+int main(){
+	
+	int c , w , totTime = 0;//总等待时间
+	int stTime = convertTime(8 , 0 , 0);
+	int edTime = convertTime(17 , 0 ,0);
+	scanf("%d%d",&c,&w);
+	for(int i = 0 ; i < w ; i++)//赋值
+		endTime[i] = stTime;
+	for(int i = 0 ; i < c ;i++){
+		int h , m ,s , serveTime;
+		scanf("%d:%d:%d %d",&h,&m,&s,&serveTime);
+		int comeTime = convertTime(h,m,s);
+		if(comeTime > edTime)//关门了
+			continue;
+		newCustomer.comeTime = comeTime;
+		//不超过60分钟
+		newCustomer.serveTime = serveTime > 60 ? 3600 : serveTime*60;
+		customer.push_back(newCustomer);
+	}
+	//排序，让先来先访问
+	sort(customer.begin() , customer.end() , cmp);
+
+	//开始模拟过程
+	for(int i = 0 ; i < customer.size() ; i++){
+		
+		int minEndTime = INF,idx = -1;//记录最先结束的窗口
+		for(int j = 0 ; j < w ; j++)
+			if(endTime[j] < minEndTime){
+				minEndTime = endTime[j];
+				idx = j;
+			}
+
+		if(customer[i].comeTime < minEndTime){//需要等待
+			totTime += (minEndTime - customer[i].comeTime); 
+			endTime[idx] += customer[i].serveTime;
+		}else{//不需要等待
+			endTime[idx] = customer[i].comeTime + customer[i].serveTime; 
+		}
+	}
+
+	printf("%.1f\n",1.0*totTime/60/customer.size());
+	return 0;
+}
