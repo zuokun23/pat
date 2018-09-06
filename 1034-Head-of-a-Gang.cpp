@@ -6,7 +6,7 @@
 using namespace std;
 
 const int MAXV = 2010;//总人数
-int G[MAXV][MAXV] = {0}, weight[MAXV] = {0};//边权和点权
+int G[MAXV][MAXV] = {0}, weight[MAXV] = {0};//边权和点权，初始0代表通话0分钟
 map<string , int> strToInt;
 map<int , string> intToStr;
 map<string ,int> gang;//head,人数
