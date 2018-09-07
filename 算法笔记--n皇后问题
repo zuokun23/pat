@@ -1,0 +1,83 @@
+//暴力解法
+#include<cstdio>
+#include<cmath>
+using namespace std;
+
+const int maxn = 120;
+int p[maxn];
+bool vis[maxn] = {false};
+int n , cnt = 0;
+bool flag;
+
+void generateP(int index){
+	if(index == n+1){
+		flag = true;
+		for(int i = 1 ; i <= n ; i++){
+			for(int j = i+1 ; j <= n ; j++){
+				if(abs(i - j) == abs(p[i] - p[j]))
+					flag = false;
+			}
+		}
+		if(flag == true)
+			cnt++;
+	}
+
+	for(int i = 1 ; i <= n ; i++){
+		if(vis[i] == false){
+			p[index] = i;
+			vis[i] = true;
+			generateP(index+1);
+			vis[i] = false;
+		}
+	}
+
+}
+int main(){
+	n = 8;
+	generateP(1);//产生全排序
+	printf("%d\n",cnt);
+	return 0;
+}
+
+//回溯法
+#include<cstdio>
+#include<cmath>
+using namespace std;
+
+const int maxn = 120;
+int p[maxn];
+bool vis[maxn] = {false};
+int n , cnt = 0;
+bool flag;
+
+void generateP(int index){
+	if(index == n+1){
+		cnt++;//能到达这里一定是合法的
+		return;
+	}
+
+	for(int i = 1 ; i <= n ; i++){
+		if(vis[i] == false){
+			flag = true;
+			for(int j = 1 ; j < index ; j++){//检查index是否可以插入
+				if(abs(index - j) == abs(/*不能写成p[index]，此时还未填值*/i - p[j])){
+					flag = false;
+					break;
+				}
+			}
+			if(flag == true){
+				p[index] = i;
+				vis[i] = true;
+				generateP(index+1);
+				vis[i] = false;
+			}
+		}
+	}
+
+}
+int main(){
+	n = 8;
+	generateP(1);//产生全排序
+	printf("%d\n",cnt);
+	return 0;
+}
