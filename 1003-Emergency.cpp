@@ -33,16 +33,18 @@ void dijkstra(int s) {//单源最短路径
         vis[u] = true;
 
         for(int v = 0 ; v < n ; v++){//对其他黑暗中的点进行更新
-            if(vis[v] == false && d[u] + G[u][v] < d[v]){
-                d[v] = d[u] + G[u][v];
-                num[v] = num[u];
-                w[v] = w[u] + Weight[v];
-            }else if(vis[v] == false && d[u] + G[u][v] == d[v]){
-                if(w[v] < w[u] + Weight[v]){
-                    w[v] = w[u] + Weight[v];
-                }
-                num[v] += num[u];
-            }
+            if(vis[v] == false && G[u][v] != INF){
+				if(d[u] + G[u][v] < d[v]){
+					d[v] = d[u]+G[u][v];
+					w[v] = w[u] + weight[v];
+					num[v] = num[u];
+				}else if(d[u] + G[u][v] == d[v] ){
+					if(w[v] < w[u] + weight[v]){
+						w[v] = w[u] + weight[v];
+					}
+					num[v] += num[u];//注意：不要写在上个if里面
+				}
+			}
         }
     }
 }
