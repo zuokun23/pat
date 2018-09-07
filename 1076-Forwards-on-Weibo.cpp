@@ -15,6 +15,7 @@ void BFS(int s){
 	
 	queue<int> q;
 	q.push(s);
+	vis[u] = ture;
 	level[s] = 0; 
 	while(!q.empty()){
 		
