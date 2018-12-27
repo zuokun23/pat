@@ -26,6 +26,8 @@ int main(){
     stack<int> st;
     scanf("%d%d",&a,&b);
     c = a+b;
+    if(c == 0)
+      printf("0");
     if(c < 0) {//处理负数
         printf("-");
         c = 0 - c;
