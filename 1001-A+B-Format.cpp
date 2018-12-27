@@ -12,7 +12,7 @@ int main(){
     for(int i = 0 ; i < len ; i++){
         cout<<s[i];
         if(s[i] == '-') continue;
-        if( (i+1)%3 == len%3 && i != len-1) printf(",");
+        if( (i+1)%3 == len%3 && i != len-1) printf(",");//编号为i+1(从1开始)的字符 与 编号为len的字符地位相同
     }
 }
 
