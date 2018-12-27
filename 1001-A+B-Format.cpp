@@ -1,4 +1,4 @@
-//字符串处理，技巧
+//字符串处理 to_string() + %
 #include <iostream>
 
 using namespace std;
@@ -16,41 +16,36 @@ int main(){
     }
 }
 
-//死板的数据处理
-#include<cstdio>
-#include<stack>
+//死板方法 % + / + stack
+#include <cstdio>
+#include <stack>
 using namespace std;
 
 int main(){
-
-    int a,b,res;
-    stack<int> s;
-
-    scanf("%d %d",&a,&b);
-    res = a + b;
-
-    if(res == 0)
-        printf("0");
-    else{
-
-        if(res < 0){
-            printf("-");
-            res = 0-res;
-        }
-        while (res > 0) {
-            s.push(res % 1000);
-            res /= 1000;
-        }
-        int len = s.size();
-        while (!s.empty()) {
-            if(s.size() == len)
-                printf("%d",s.top());
-            else
-                printf("%03d",s.top());
-            if(s.size() > 1)
-                printf(",");
-            s.pop();
-        }
+    int a,b,c;
+    stack<int> st;
+    scanf("%d%d",&a,&b);
+    c = a+b;
+    if(c < 0) {//处理负数
+        printf("-");
+        c = 0 - c;
     }
+    while(c > 0){//入栈
+        st.push(c % 1000);
+        c /= 1000;
+    }
+    int len = st.size();
+    while(!st.empty()){//出栈
+        if(st.size() == len)
+            printf("%d",st.top());
+        else
+            printf("%03d",st.top());
+        if(st.size() != 1)
+            printf(",");
+        st.pop();
+    }
+
     return 0;
 }
+
+
