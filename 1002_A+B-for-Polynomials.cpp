@@ -1,34 +1,27 @@
 #include<cstdio>
-
 using namespace std;
-const int maxn = 1010;
-
 int main(){
 
-    float coefficient[maxn] = {0};
-    int k , t1;
-    float t2;
-    scanf("%d",&k);
-    for(int i = 0 ; i < k ; i++){
-        scanf("%d%f",&t1,&t2);
-        coefficient[t1] = t2;
+    float c[1001] = {0};
+    int m , n , t;
+    float num;
+    scanf("%d",&m);
+    for(int i = 0 ; i < m ; i++){
+        scanf("%d%f",&t,&num);
+        c[t] += num;
     }
-    scanf("%d",&k);
-    for(int i = 0 ; i < k ; i++){
-        scanf("%d%f",&t1,&t2);
-        if(coefficient[t1] == 0)
-            coefficient[t1] = t2;
-        else
-            coefficient[t1] += t2;
+    scanf("%d",&n);
+    for(int i = 0 ; i < n ; i++){
+        scanf("%d%f",&t,&num);
+        c[t] += num;
     }
-
     int cnt = 0;
-    for(int i = 0 ; i < maxn ; i++)
-        if(coefficient[i] != 0)
+    for(int i = 0 ; i < 1001 ; i++)
+        if(c[i] != 0)
             cnt++;
     printf("%d",cnt);
-    for(int i = maxn-1 ; i >= 0 ; i--)
-        if(coefficient[i] != 0)
-            printf(" %d %.1f",i,coefficient[i]);
+    for(int i = 1000 ; i >= 0 ; i--)
+        if(c[i] != 0.0)
+            printf(" %d %.1f",i,c[i]);
     return 0;
 }
