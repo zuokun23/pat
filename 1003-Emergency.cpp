@@ -1,39 +1,43 @@
+/////方法1：Dijkstra
+
 #include<cstdio>
-#include<algorithm>
-#include <cstring>
+#include<queue>
 
 using namespace std;
 
-const int MAXV = 510;
-const int INF = 100000000;
-int n,m,c1,c2,G[MAXV][MAXV],Weight[MAXV];//最后一个为点权，每个点物资重量
-int num[MAXV], w[MAXV];//最短路径数目 最大物资数目
-int d[MAXV];//s到Vi最短距离
-bool vis[MAXV] = {false};//记录访问过的结点
+const int maxn = 510;
+const int INF = 1 << 30;
+int G[maxn][maxn];
+bool vis[maxn] = {false};
+int d[maxn];
+int weight[maxn],w[maxn];//点权
+int num[maxn];//路径数
+int n ,m , c1 ,c2;
 
-void dijkstra(int s) {//单源最短路径
+void Dijkstra(int s){
+	
+	fill(d , d+maxn , INF);
+	d[s] = 0;
+	fill(w , w+maxn , 0);
+	w[s] = weight[s];
+	fill(num , num+maxn , 0);
+	num[s] = 1;
 
-    fill(d , d+MAXV , INF);
-    memset(num , 0 , sizeof(num));
-    memset(w , 0 , sizeof(w));
-    d[s] = 0;//为了让第一次选中s点
-    w[s] = Weight[s];
-    num[s] = 1;
+	for(int i = 0 ; i < n ; i++){
+		int u = -1 , MIN = INF;
+		for(int j = 0 ; j < n ; j++){
+			if(vis[j] == false && d[j] < MIN){
+				MIN = d[j];
+				u = j;
+			}
+		}
+		if(u == -1)
+			return;
 
-    for(int i = 0 ; i < n ; i++){//占领n个城市
+		vis[u] = true;
 
-        int min = INF , u = -1;//=-1是为了下面的判断
-        for(int j = 0 ; j < n ; j++){
-            if(vis[j] == false && d[j] < min){
-                min = d[j];
-                u = j;
-            }
-        }
-        if(u == -1) return;//找不到能到的点了
-        vis[u] = true;
-
-        for(int v = 0 ; v < n ; v++){//对其他黑暗中的点进行更新
-            if(vis[v] == false && G[u][v] != INF){
+		for(int v = 0 ; v < n ; v++){
+			if(vis[v] == false && G[u][v] != INF){
 				if(d[u] + G[u][v] < d[v]){
 					d[v] = d[u]+G[u][v];
 					w[v] = w[u] + weight[v];
@@ -42,29 +46,119 @@ void dijkstra(int s) {//单源最短路径
 					if(w[v] < w[u] + weight[v]){
 						w[v] = w[u] + weight[v];
 					}
-					num[v] += num[u];//注意：不要写在上个if里面
+					num[v] += num[u];
 				}
 			}
+		}
+	}
+}
+
+int main(){
+	
+	scanf("%d%d%d%d",&n,&m,&c1,&c2);
+	for(int i = 0 ; i < n ; i++){
+		scanf("%d",&weight[i]);
+	}
+	fill(G[0] , G[0]+maxn*maxn , INF);
+	for(int i = 0 ; i < m ; i++){
+		int u , v , w;
+		scanf("%d%d%d",&u,&v,&w);
+		G[u][v] = G[v][u] = w;
+	}
+
+	Dijkstra(c1);
+
+	printf("%d %d\n",num[c2],w[c2]);
+	return 0;
+}
+
+//////方法2： Dijkstra + DFS
+#include<iostream>
+#include<vector>
+
+using namespace std;
+const int maxn = 510;
+const int INF = 1000000000;
+int G[maxn][maxn], w[maxn] = {0};
+bool vis[maxn] = {false};
+int d[maxn];
+vector<int> pre[maxn];
+int n,m,c1,c2;
+vector<int> tmpPath , maxPath;
+int maxWeight = -1 , tmpWeight , num = 0;
+
+void Dijkstra(int s){
+
+    fill(d , d+maxn , INF);
+    d[s] = 0;
+    for(int i = 0 ; i < n ;i++){
+        int min = INF , u = -1;
+        for(int j = 0 ; j < n ; j++){
+            if(vis[j] == false && d[j] < min){
+                u = j;
+                min = d[j];
+            }
+        }
+        if(u == -1) return;
+
+        vis[u] = true;
+
+        for(int v = 0 ; v < n ; v++){
+            if(vis[v] == false && G[u][v] != INF) {
+                if (d[u] + G[u][v] == d[v])
+                    pre[v].push_back(u);
+                else if(d[u] + G[u][v] < d[v]){
+                    d[v] = d[u] + G[u][v];
+                    pre[v].clear();
+                    pre[v].push_back(u);
+                }
+            }
         }
     }
 }
+void DFS(int s){
+
+    tmpWeight += w[s];
+    tmpPath.push_back(s);
+    if(s == c1){
+        if(tmpWeight > maxWeight){
+            maxWeight = tmpWeight;
+            maxPath = tmpPath;
+        }
+        num++;
+        tmpWeight -= w[s];
+        tmpPath.pop_back();
+        return;
+    }
+
+    for(int i = 0 ; i < pre[s].size() ; i++){
+        DFS(pre[s][i]);
+    }
+    tmpWeight -= w[s];
+    tmpPath.pop_back();
+    return;
+}
+
 int main(){
-    //输入
+
     scanf("%d%d%d%d",&n,&m,&c1,&c2);
-    fill(Weight , Weight+MAXV , 0);
+    
     for(int i = 0 ; i < n ; i++){
-        scanf("%d",Weight + i);
+        int weight;
+        scanf("%d",&weight);
+        w[i] = weight;
+    }
+    fill(G[0] , G[0] + maxn*maxn , INF);
+    for(int i = 0 ; i < m ; i++){
+        int u,v ,weight;
+        scanf("%d%d%d",&u,&v,&weight);
+        G[u][v] = weight;
+        G[v][u] = weight;
     }
 
-    int u,v;
-    fill(G[0] , G[0]+MAXV*MAXV , INF);//G初始化
-    for(int i = 0; i < m ; i++){
-        scanf("%d%d",&u,&v);
-        scanf("%d",&G[u][v]);
-        G[v][u] = G[u][v];
-    }
+    Dijkstra(c1);
+    DFS(c2);
+    printf("%d %d",num,maxWeight);
 
-    dijkstra(c1);
-    //输出
-    printf("%d %d\n",num[c2],w[c2]);
+    return 0;
 }
