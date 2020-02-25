@@ -50,4 +50,42 @@ int main(){
     return 0;
 }
 
+//
+#include<cstdio> 
+
+using namespace std;
+
+int main(){
+	
+	int a , b , c , pos = 0;
+	int d[10]; 
+	scanf("%d %d",&a,&b);
+	c = a + b;
+	
+	if(c < 0){//负值
+	
+		printf("-");
+		c = 0 - c;
+	}else if(c == 0){//0
+		printf("0");
+	}
+	
+	while(c != 0){
+		d[pos++] = c%1000;
+		c = c /1000;
+	}
+	
+	for(int i = pos-1 ; i >= 0 ; i--){
+		if(i == pos -1)//，0与，000
+			printf("%d",d[i]);
+		else
+			printf("%03d",d[i]);
+		
+		if(i != 0)//，
+			printf(",");
+	}
+
+	return 0;
+}
+
 
