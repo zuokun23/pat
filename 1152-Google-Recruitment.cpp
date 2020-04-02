@@ -22,8 +22,8 @@ int main(){
 		int num = stoi(t);
 		if(isPrime(num)){
 			
-			for(int i = 0 ; i < t.size() ; i++){//输出0023这样的质数
-				if(t[i] == '0')
+			for(int j = 0 ; j < t.size() ; j++){//输出0023这样的质数
+				if(t[j] == '0')
 					cout << '0';
 				else//防止0203这样的情况
 					break;
